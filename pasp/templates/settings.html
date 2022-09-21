@@ -1,0 +1,61 @@
+{% args ctx %}
+<!doctype html>
+<html lang="en" data-theme="dark">
+    <head>
+        <title>Settings | {{ ctx['title'] }}</title>
+        {% include "includes/head.html" ctx %}
+    </head>
+    <body class="pasp-settings">
+        {% include "includes/nav.html" ctx %}
+        <main class="container">
+            <article>
+                <header>
+                    <strong>General Settings</strong>
+                </header>
+                <form x-data="{
+                    THRESHOLD: '{{ ctx['settings'].THRESHOLD }}',
+                    LED_BRIGHTNESS: {{ ctx['settings'].LED_BRIGHTNESS }},
+                    AP_CHANNEL: {{ ctx['settings'].AP_CHANNEL }}
+                }" action="/settings" method="POST" @submit.prevent="submitFormAndRefresh">
+                    <div>
+                        <label for="THRESHOLD">Sensitivity</label>
+                        <select name="THRESHOLD" x-model="THRESHOLD">
+                            <option value="moderate">Moderate</option>
+                            <option value="unhealthy_sensitive">Unhealthy for Sensitive Groups</option>
+                            <option value="unhealthy">Unhealthy</option>
+                        </select>
+                        <small>Adjust the air quality level at which the air purifier will be activated.</small>
+                    </div>
+
+                    <div>
+                        <label for="LED_BRIGHTNESS">LED Brightness</label>
+                        <select name="LED_BRIGHTNESS" x-model="LED_BRIGHTNESS">
+                            <option value="1.0">Bright</option>
+                            <option value="0.2">Dim</option>
+                        </select>
+                        <small></small>
+                    </div>
+
+                    <div x-data="{show_advanced: false}">
+                        <p><a href="#" @click.prevent="show_advanced = !show_advanced">Advanced Settings</a></p>
+
+                        <div x-show="show_advanced" x-transition>
+                            <div>
+                                <label for="AP_CHANNEL">Access Point Channel</label>
+                                <select name="AP_CHANNEL" x-model="AP_CHANNEL">
+                                    {% for x in range(1, 12) %}
+                                    <option value="{{ x }}">{{ x }}</option>
+                                    {% endfor %}
+                                </select>
+                                <small>If you don't know what this is, you can probably leave it alone. That said, 1, 6, and 11 are usually good choices.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit">Save Settings</button>
+                </form>
+            </article>
+        </main>
+        {% include "includes/modal.html" %}
+    </body>
+</html>

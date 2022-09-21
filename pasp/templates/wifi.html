@@ -1,0 +1,46 @@
+{% args ctx %}
+<!doctype html>
+<html lang="en" data-theme="dark">
+    <head>
+        <title>Wi-Fi | {{ ctx['title'] }}</title>
+        {% include "includes/head.html" ctx %}
+    </head>
+    <body class="pasp-wifi">
+        {% include "includes/nav.html" ctx %}
+        <main class="container">
+            <article x-data="networkConfig()" x-init="fetchNetworks()">
+                <header>
+                    <strong>Wi-Fi Networks</strong>
+                </header>
+
+                <div aria-busy="true" x-show="networks.length == 0"></div>
+
+                <div class="network-list" x-show="networks">
+                    <template x-for="network in networks">
+                        <div x-data="{selected: false}" class="media network-detail" :class="networkSignalClass(network)">
+                            <div @click="selected = !selected" class="media-left">
+                                <span class="icon is-3x">
+                                    <object type="image/svg+xml" :data="networkSignalIcon(network)" onload="setIconColor(this);"></object>
+                                </span>
+                            </div>
+                            <div class="media-content">
+                                <form action="/settings" method="POST" x-data="{STA_SSID: network.ssid, STA_PASSWORD: ''}" @submit.prevent="submitFormAndRefresh">
+                                    <div class="grid">
+                                        <div @click="selected = !selected" class="network-info">
+                                            <strong class="network-name" x-text="network.ssid"></strong><br />
+                                            <small class="network-auth" x-text="network.authmode"></small>
+                                            <input type="hidden" name="STA_SSID" :value="network.ssid" />
+                                        </div>
+                                        <input x-model="STA_PASSWORD" x-show="selected" x-transition type="password" name="STA_PASSWORD" placeholder="password" />
+                                        <button x-show="selected" x-transition type="submit">Connect</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </article>
+        </main>
+        {% include "includes/modal.html" %}
+    </body>
+</html>

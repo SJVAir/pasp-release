@@ -1,0 +1,122 @@
+{% args ctx %}
+<!doctype html>
+<html lang="en" data-theme="dark">
+    <head>
+        <title>{{ ctx['title'] }}</title>
+        {% include "includes/head.html" ctx %}
+        <script type="text/javascript">
+            window.PASP = {
+                THRESHOLD: {{ ctx['THRESHOLD'] }}
+            }
+        </script>
+    </head>
+    <body class="pasp-dashboard">
+        {% include "includes/nav.html" ctx %}
+        <main class="container">
+            <div class="grid">
+                <div>
+                    <article>
+                        <header><strong>Connection Status</strong></header>
+                        <div class="connection-list">
+                            <div x-data="wifiWidget('sta')" x-init="initialize()" class="connection connection-sta" :class="signalConnectionClass(data)">
+                                <div class="media">
+                                    <div class="media-left">
+                                        <span class="icon is-3x" :class="data.connected ? '' : 'is-faded'">
+                                            <object type="image/svg+xml" :data="wifiIcon(data)" onload="setIconColor(this);"></object>
+                                        </span>
+                                    </div>
+                                    <div class="media-content">
+                                        <p class="connection-title">
+                                            <span>Wi-Fi Connection</span>
+                                            <span aria-busy="true" x-show="isLoading" x-transition></span>
+                                        </p>
+                                        <p class="connection-label" x-text="data.ssid ? data.ssid : '–'"></p>
+                                        <p class="connection-status" x-text="data.connected ? data.ip : data.status"></p>
+                                    </div>
+                                    <div class="media-right">
+                                        <span class="icon is-3x">
+                                            <object type="image/svg+xml" :data="signalIcon()" onload="setIconColor(this);"></object>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div x-data="wifiWidget('ap')" x-init="initialize()" class="connection connection-ap" :class="data && data.active ? 'connection-great' : 'connection-disconnected'">
+                                <div class="media">
+                                    <div class="media-left">
+                                        <span class="icon is-3x" :class="data.active ? '' : 'is-faded'">
+                                            <object type="image/svg+xml" data="/static/img/wifi.svg" onload="setIconColor(this);"></object>
+                                        </span>
+                                    </div>
+                                    <div class="media-content">
+                                        <p class="connection-title">
+                                            <span>Access Point</span>
+                                            <span aria-busy="true" x-show="isLoading" x-transition></span>
+                                        </p>
+                                        <p class="connection-label" x-text="data.ssid ? data.ssid : '–'"></p>
+                                        <p class="connection-status" x-text="data.connected ? data.ip : data.status"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div x-data="plugWidget()" x-init="initialize()" class="connection connection-plug" :class="signalConnectionClass(data)">
+                                <div class="media">
+                                    <div class="media-left">
+                                        <span class="icon is-3x" :class="data.relay_state ? '' : 'is-faded'">
+                                            <object type="image/svg+xml" data="/static/img/outlet.svg" onload="setIconColor(this);"></object>
+                                        </span>
+                                    </div>
+                                    <div class="media-content">
+                                        <p class="connection-title">
+                                            <span>Smart Plug</span>
+                                            <span aria-busy="true" x-show="isLoading" x-transition></span>
+                                        </p>
+                                        <p class="connection-label">
+                                            <span x-text="data.alias ? data.alias : '–'"></span>
+                                        </p>
+                                        <p class="connection-status" x-text="hardware"></p>
+                                    </div>
+                                    <div class="media-right">
+                                        <span class="icon is-3x">
+                                            <object type="image/svg+xml" :data="signalIcon()" onload="setIconColor(this);"></object>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+                <div>
+                    <article x-data="pm25Widget()" x-init="initialize()" class="air-quality">
+                        <header>
+                            <div class="loading" x-show="isLoading" aria-busy="true"></div>
+                            <strong>Air Quality</strong>
+                        </header>
+
+                        <div class="section grid">
+                            <div class="air-widget" :class="data.realtime_key">
+                                <div class="label">Real Time</div>
+                                <div class="value" x-text="data.realtime_pm25 || '–'"></div>
+                                <div class="label">PM2.5</div>
+
+                            </div>
+                            <div class="air-widget" :class="data.hour_key">
+                                <div class="label">1-Hour Avg.</div>
+                                <div class="value" x-text="data.hour_pm25 || '–'"></div>
+                                <div class="label">PM2.5</div>
+                            </div>
+                        </div>
+
+                        <div class="section">
+                            <div id="id_hour_plot" class="plot"></div>
+                        </div>
+
+                        <div class="section">
+                            <div id="id_day_plot" class="plot"></div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </main>
+    </body>
+</html>
