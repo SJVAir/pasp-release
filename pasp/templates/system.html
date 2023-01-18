@@ -1,0 +1,47 @@
+{% args ctx %}
+<!doctype html>
+<html lang="en" data-theme="dark">
+    <head>
+        <title>System Information | {{ ctx['title'] }}</title>
+        {% include "includes/head.html" ctx %}
+    </head>
+    <body class="pasp-system">
+        {% include "includes/nav.html" ctx %}
+        <main class="container">
+            <article>
+                <header>
+                    <strong>System Information</strong>
+                </header>
+
+                {% for idx, (title, data) in enumerate(ctx['data']) %}
+                <details open>
+                    <summary role="button">{{ title }}</summary>
+                    <figure>
+                        <table role="grid" class="is-vertical">
+                            {% for key, value in data %}
+                                <tr>
+                                    <th>{{ key }}</th>
+                                    <td>
+                                        {% if type(value) != tuple %}
+                                            {{ value }}
+                                        {% else %}
+                                            <table role="grid" class="is-vertical">
+                                                {% for key, value in value %}
+                                                    <tr>
+                                                        <th>{{ key }}</th>
+                                                        <td>{{ value }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </table>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </figure>
+                </details>
+                {% endfor %}
+            </article>
+        </main>
+    </body>
+</html>
