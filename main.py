@@ -69,4 +69,4 @@ if __name__ == '__main__':
             time.sleep(.5)
             beacon.off()
             time.sleep(.5)
-        machine.restart()
+        machine.reset()
